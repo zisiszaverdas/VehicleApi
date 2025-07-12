@@ -13,6 +13,8 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+app.UseMiddleware<GlobalExceptionMiddleware>();
+
 // Load reference data on startup
 using (var scope = app.Services.CreateScope())
 {
