@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using VehicleApi.Middleware;
 
-namespace VehicleApi.Tests;
+namespace VehicleApi.Tests.Middleware;
 
 public class GlobalExceptionMiddlewareTests
 {

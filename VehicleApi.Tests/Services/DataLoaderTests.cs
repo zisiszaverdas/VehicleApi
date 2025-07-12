@@ -2,7 +2,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using VehicleApi.Services;
 
-namespace VehicleApi.Tests;
+namespace VehicleApi.Tests.Services;
 
 public class DataLoaderTests : IDisposable
 {
