@@ -2,15 +2,9 @@ using VehicleApi.Models;
 
 namespace VehicleApi.Services;
 
-public class DataLoader
+public class DataLoader(ILogger<DataLoader> logger) : IDataLoader
 {
-    private readonly ILogger<DataLoader> _logger;
-
-    public DataLoader(ILogger<DataLoader> logger)
-    {
-        _logger = logger;
-    }
-
+   
     public List<Category> LoadCategories(string filePath)
     {
         var categories = new List<Category>();
@@ -32,7 +26,7 @@ public class DataLoader
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to load categories from {FilePath}", filePath);
+            logger.LogError(ex, "Failed to load categories from {FilePath}", filePath);
         }
         return categories;
     }
@@ -57,7 +51,7 @@ public class DataLoader
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to load vehicles from {FilePath}", filePath);
+            logger.LogError(ex, "Failed to load vehicles from {FilePath}", filePath);
         }
         return vehicles;
     }
@@ -85,7 +79,7 @@ public class DataLoader
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to load events from {FilePath}", filePath);
+            logger.LogError(ex, "Failed to load events from {FilePath}", filePath);
         }
         return events;
     }
@@ -94,7 +88,7 @@ public class DataLoader
     {
         if (!File.Exists(filePath))
         {
-            _logger.LogWarning("File not found: {FilePath}", filePath);
+            logger.LogWarning("File not found: {FilePath}", filePath);
             yield break;
         }
         using var reader = new StreamReader(filePath);
