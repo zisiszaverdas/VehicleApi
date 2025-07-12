@@ -8,6 +8,8 @@ builder.Services.AddSingleton<IDataStore, DataStore>();
 builder.Services.AddScoped<IDataLoader, DataLoader>();
 builder.Services.AddScoped<ICategoryReportService, CategoryReportService>();
 builder.Services.AddScoped<IVehicleReportService, VehicleReportService>();
+builder.Services.AddSingleton<IGpsEventGeneratorService, GpsEventGeneratorService>();
+builder.Services.AddHostedService<GpsEventGeneratorBackgroundService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -17,7 +19,6 @@ var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
-// Load reference data on startup
 using (var scope = app.Services.CreateScope())
 {
     var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
