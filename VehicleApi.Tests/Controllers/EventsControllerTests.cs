@@ -6,7 +6,7 @@ using VehicleApi.Controllers;
 using VehicleApi.Services;
 using VehicleApi.Models;
 
-namespace VehicleApi.Tests;
+namespace VehicleApi.Tests.Controllers;
 
 public class EventsControllerTests
 {
