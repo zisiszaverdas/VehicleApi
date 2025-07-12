@@ -1,6 +1,5 @@
 using VehicleApi.DTOs;
-using VehicleApi.Models;
-using Geolocation;
+using VehicleApi.Extensions;
 
 namespace VehicleApi.Services;
 
@@ -35,52 +34,10 @@ public class VehicleReportService(IDataStore dataStore) : IVehicleReportService
             return result;
 
         result.Positions = events.Select(e => new RoutePositionDto { Timestamp = e.Timestamp, Latitude = e.Latitude, Longitude = e.Longitude, SpeedKm = e.SpeedKm });
-        result.TripDistance = GetDistance(events);
-        result.Violations = GetViolations(vehicleCategory.Category, events);
+        result.TripDistance = events.CalculateTripDistance();
+        result.Violations = vehicleCategory.Category.GetSpeedViolations(events,
+            (start, duration) => new RouteViolationDto { Timestamp = start, Duration = duration }
+        );
         return result;
-    }
-
-    private static List<RouteViolationDto> GetViolations(Category category, List<Event> events)
-    {
-        var violations = new List<RouteViolationDto>();
-        if (category != null)
-        {
-            DateTime? violationStart = null;
-            foreach (var ev in events)
-            {
-                if (ev.SpeedKm > category.SpeedLimitKm)
-                {
-                    if (violationStart == null)
-                        violationStart = ev.Timestamp;
-                    if ((ev.Timestamp - violationStart.Value).TotalSeconds >= category.SpeedLimitDurationSeconds)
-                    {
-                        violations.Add(new RouteViolationDto { Timestamp = violationStart.Value, Duration = (ev.Timestamp - violationStart.Value).TotalSeconds });
-                        violationStart = null;
-                    }
-                }
-                else
-                {
-                    violationStart = null;
-                }
-            }
-        }
-
-        return violations;
-    }
-
-    private static double GetDistance(List<Event> events)
-    {
-        double distance = 0;
-        Event? prev = null;
-        foreach (var ev in events)
-        {
-            if (prev != null)
-            {
-                distance += GeoCalculator.GetDistance(prev.Latitude, prev.Longitude, ev.Latitude, ev.Longitude, 1, DistanceUnit.Meters);
-            }
-            prev = ev;
-        }
-
-        return distance;
     }
 }

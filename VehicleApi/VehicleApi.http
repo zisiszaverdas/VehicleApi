@@ -1,6 +1,21 @@
 @VehicleApi_HostAddress = http://localhost:5194
+@vehicleId = 7091
+@categoryId = 1025
+@fromTime = 2022-01-01
+@toTime = 2022-12-31
 
-GET {{VehicleApi_HostAddress}}/weatherforecast/
+GET {{VehicleApi_HostAddress}}/api/Vehicles/{{vehicleId}}/route?fromTime={{fromTime}}&toTime={{toTime}}
 Accept: application/json
 
 ###
+GET {{VehicleApi_HostAddress}}/api/categories/{{categoryId}}/violations?fromTime={{fromTime}}&toTime={{toTime}}
+Accept: application/json
+
+###
+GET {{VehicleApi_HostAddress}}/api/categories/{{categoryId}}/trip-distances?fromTime={{fromTime}}&toTime={{toTime}}
+Accept: application/json
+
+###
+# File upload is not possible using .http files in Visual Studio yet
+POST {{VehicleApi_HostAddress}}/api/Events/upload
+Accept: application/json
