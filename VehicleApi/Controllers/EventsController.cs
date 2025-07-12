@@ -23,7 +23,12 @@ public class EventsController(IDataStore dataStore, IDataLoader dataLoader, ILog
                 await file.CopyToAsync(stream);
             }
             var events = dataLoader.LoadEvents(tempFilePath);
-            dataStore.Events.AddRange(events);
+
+            foreach (var eventItem in events)
+            {
+                dataStore.Events.Add(eventItem);
+            }
+
             return Ok(new { events.Count });
         }
         catch (Exception ex)

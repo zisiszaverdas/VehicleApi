@@ -5,9 +5,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddSingleton<IDataStore, DataStore>();
-builder.Services.AddSingleton<IDataLoader, DataLoader>();
-builder.Services.AddSingleton<ICategoryReportService, CategoryReportService>();
-builder.Services.AddSingleton<IVehicleReportService, VehicleReportService>();
+builder.Services.AddScoped<IDataLoader, DataLoader>();
+builder.Services.AddScoped<ICategoryReportService, CategoryReportService>();
+builder.Services.AddScoped<IVehicleReportService, VehicleReportService>();
+builder.Services.AddSingleton<IGpsEventGeneratorService, GpsEventGeneratorService>();
+builder.Services.AddHostedService<GpsEventGeneratorBackgroundService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -17,7 +19,6 @@ var app = builder.Build();
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
-// Load reference data on startup
 using (var scope = app.Services.CreateScope())
 {
     var dataStore = scope.ServiceProvider.GetRequiredService<IDataStore>();
@@ -26,9 +27,9 @@ using (var scope = app.Services.CreateScope())
     var categoryPath = Path.Combine(basePath, "CategoryData.dat");
     var vehiclePath = Path.Combine(basePath, "VehicleData.dat");
     if (File.Exists(categoryPath))
-        dataStore.Categories = dataLoader.LoadCategories(categoryPath);
+        dataStore.Categories = [.. dataLoader.LoadCategories(categoryPath)];
     if (File.Exists(vehiclePath))
-        dataStore.Vehicles = dataLoader.LoadVehicles(vehiclePath);
+        dataStore.Vehicles = [.. dataLoader.LoadVehicles(vehiclePath)];
 }
 
 // Configure the HTTP request pipeline.

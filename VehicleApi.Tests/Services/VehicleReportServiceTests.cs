@@ -1,4 +1,5 @@
 using NSubstitute;
+using System.Collections.Concurrent;
 using VehicleApi.Models;
 using VehicleApi.Services;
 
@@ -18,9 +19,9 @@ public class VehicleReportServiceTests
     [Fact]
     public void GetRouteByVehicle_ReturnsEmpty_WhenVehicleNotFound()
     {
-        _dataStore.Vehicles.Returns(new List<Vehicle>());
-        _dataStore.Categories.Returns(new List<Category>());
-        _dataStore.Events.Returns(new List<Event>());
+        _dataStore.Vehicles.Returns(new ConcurrentBag<Vehicle>());
+        _dataStore.Categories.Returns(new ConcurrentBag<Category>());
+        _dataStore.Events.Returns(new ConcurrentBag<Event>());
 
         var result = _service.GetRouteByVehicle(1, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow);
         Assert.Equal(1, result.VehicleId);
@@ -32,9 +33,9 @@ public class VehicleReportServiceTests
     [Fact]
     public void GetRouteByVehicle_ReturnsEmpty_WhenNoEvents()
     {
-        _dataStore.Vehicles.Returns(new List<Vehicle> { new Vehicle { VehicleId = 1, CategoryId = 2 } });
-        _dataStore.Categories.Returns(new List<Category> { new Category { CategoryId = 2, SpeedLimitKm = 50, SpeedLimitDurationSeconds = 10 } });
-        _dataStore.Events.Returns(new List<Event>());
+        _dataStore.Vehicles.Returns(new ConcurrentBag<Vehicle> { new Vehicle { VehicleId = 1, CategoryId = 2 } });
+        _dataStore.Categories.Returns(new ConcurrentBag<Category> { new Category { CategoryId = 2, SpeedLimitKm = 50, SpeedLimitDurationSeconds = 10 } });
+        _dataStore.Events.Returns(new ConcurrentBag<Event>());
 
         var result = _service.GetRouteByVehicle(1, DateTime.UtcNow.AddHours(-1), DateTime.UtcNow);
         Assert.Equal(1, result.VehicleId);
@@ -47,9 +48,9 @@ public class VehicleReportServiceTests
     public void GetRouteByVehicle_ReturnsPositions_AndTripDistance()
     {
         var now = DateTime.UtcNow;
-        _dataStore.Vehicles.Returns(new List<Vehicle> { new Vehicle { VehicleId = 1, CategoryId = 2 } });
-        _dataStore.Categories.Returns(new List<Category> { new Category { CategoryId = 2, SpeedLimitKm = 50, SpeedLimitDurationSeconds = 10 } });
-        _dataStore.Events.Returns(new List<Event>
+        _dataStore.Vehicles.Returns(new ConcurrentBag<Vehicle> { new Vehicle { VehicleId = 1, CategoryId = 2 } });
+        _dataStore.Categories.Returns(new ConcurrentBag<Category> { new Category { CategoryId = 2, SpeedLimitKm = 50, SpeedLimitDurationSeconds = 10 } });
+        _dataStore.Events.Returns(new ConcurrentBag<Event>
         {
             new Event { VehicleId = 1, Timestamp = now, Latitude = 0, Longitude = 0, SpeedKm = 10 },
             new Event { VehicleId = 1, Timestamp = now.AddSeconds(10), Latitude = 0, Longitude = 0.001, SpeedKm = 20 }
@@ -66,9 +67,9 @@ public class VehicleReportServiceTests
     public void GetRouteByVehicle_DetectsSpeedViolations()
     {
         var now = DateTime.UtcNow;
-        _dataStore.Vehicles.Returns(new List<Vehicle> { new Vehicle { VehicleId = 1, CategoryId = 2 } });
-        _dataStore.Categories.Returns(new List<Category> { new Category { CategoryId = 2, SpeedLimitKm = 50, SpeedLimitDurationSeconds = 10 } });
-        _dataStore.Events.Returns(new List<Event>
+        _dataStore.Vehicles.Returns(new ConcurrentBag<Vehicle> { new Vehicle { VehicleId = 1, CategoryId = 2 } });
+        _dataStore.Categories.Returns(new ConcurrentBag<Category> { new Category { CategoryId = 2, SpeedLimitKm = 50, SpeedLimitDurationSeconds = 10 } });
+        _dataStore.Events.Returns(new ConcurrentBag<Event>
         {
             new Event { VehicleId = 1, Timestamp = now, Latitude = 0, Longitude = 0, SpeedKm = 60 },
             new Event { VehicleId = 1, Timestamp = now.AddSeconds(5), Latitude = 0, Longitude = 0.001, SpeedKm = 60 },

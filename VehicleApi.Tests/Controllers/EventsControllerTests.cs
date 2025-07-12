@@ -2,9 +2,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using System.Collections.Concurrent;
 using VehicleApi.Controllers;
-using VehicleApi.Services;
 using VehicleApi.Models;
+using VehicleApi.Services;
 
 namespace VehicleApi.Tests.Controllers;
 
@@ -18,7 +19,7 @@ public class EventsControllerTests
     public EventsControllerTests()
     {
         _dataStore = Substitute.For<IDataStore>();
-        _dataStore.Events.Returns(new List<Event>());
+        _dataStore.Events.Returns(new ConcurrentBag<Event>());
         _dataLoader = Substitute.For<IDataLoader>();
         _logger = Substitute.For<ILogger<EventsController>>();
         _controller = new EventsController(_dataStore, _dataLoader, _logger);
@@ -57,13 +58,14 @@ public class EventsControllerTests
         var events = new List<Event> { new Event() };
         _dataLoader.LoadEvents(Arg.Any<string>()).Returns(events);
 
-        var eventsList = new List<Event>();
-        _dataStore.Events = eventsList;
+        // Use a shared ConcurrentBag<Event> for both the substitute and assertion
+        var eventsBag = new ConcurrentBag<Event>();
+        _dataStore.Events.Returns(eventsBag);
 
         var result = await _controller.UploadEvents(file);
         var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal(1, (int)okResult.Value.GetType().GetProperty("Count")!.GetValue(okResult.Value)!);
-        Assert.Single(eventsList);
+        Assert.Equal(1, (int)okResult?.Value?.GetType().GetProperty("Count")!.GetValue(okResult.Value)!);
+        Assert.Single(eventsBag);
     }
 
     [Fact]

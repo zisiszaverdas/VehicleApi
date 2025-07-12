@@ -1,10 +1,11 @@
 using VehicleApi.Models;
+using System.Collections.Concurrent;
 
 namespace VehicleApi.Services;
 
 public interface IDataStore
 {
-    List<Category> Categories { get; set; }
-    List<Vehicle> Vehicles { get; set; }
-    List<Event> Events { get; set; }
+    ConcurrentBag<Category> Categories { get; set; }
+    ConcurrentBag<Vehicle> Vehicles { get; set; }
+    ConcurrentBag<Event> Events { get; set; }
 }
