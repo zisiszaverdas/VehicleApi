@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddSingleton<IDataStore, DataStore>();
 builder.Services.AddSingleton<IDataLoader, DataLoader>();
+builder.Services.AddSingleton<ICategoryReportService, CategoryReportService>();
 builder.Services.AddSingleton<IVehicleReportService, VehicleReportService>();
 
 builder.Services.AddControllers();
