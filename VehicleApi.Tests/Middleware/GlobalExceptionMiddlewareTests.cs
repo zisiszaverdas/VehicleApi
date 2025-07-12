@@ -41,9 +41,9 @@ public class GlobalExceptionMiddlewareTests
 
         Assert.Equal(500, context.Response.StatusCode);
         Assert.Equal("application/problem+json", context.Response.ContentType);
-        Assert.Equal("An unexpected error occurred.", problem.Title);
-        Assert.Equal("/test-path", problem.Instance);
-        Assert.Equal(500, problem.Status);
-        Assert.Contains("test-trace-id", problem.Detail);
+        Assert.Equal("An unexpected error occurred.", problem?.Title);
+        Assert.Equal("/test-path", problem?.Instance);
+        Assert.Equal(500, problem?.Status);
+        Assert.Contains("test-trace-id", problem?.Detail);
     }
 }

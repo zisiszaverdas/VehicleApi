@@ -72,9 +72,9 @@ public class DataLoaderTests : IDisposable
         _logger.Received().Log(
             LogLevel.Warning,
             Arg.Any<EventId>(),
-            Arg.Is<object>(o => o.ToString().Contains("File not found")),
+            Arg.Is<object>(o => o.ToString()!.Contains("File not found")),
             null,
-            Arg.Any<Func<object, Exception, string>>());
+            Arg.Any<Func<object, Exception?, string>>());
     }
 
     [Fact]
